@@ -13,7 +13,7 @@
   },
   "dependencies": {
     "express": "^4.19.2",
-    "lucide-react": "^0.395.0",
+    "lucide-react": "^1.23.0",
     "react": "^19.2.7",
     "react-dom": "^19.2.7"
   },
