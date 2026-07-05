@@ -609,7 +609,7 @@ export default function App() {
             <Sparkles size={22} className="text-white" />
           </div>
           <div>
-            <h1 className="brand-title">Our Home</h1>
+            <h1 className="brand-title">Smart Life</h1>
             <p
               style={{
                 fontSize: "0.75rem",

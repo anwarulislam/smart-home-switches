@@ -1,12 +1,12 @@
 {
-  "name": "Our Home Switcher",
-  "short_name": "Our Home",
+  "name": "Smart Life Switcher",
+  "short_name": "Smart Life",
   "description": "Control Tuya smart switches and spotlights from a premium dashboard",
   "start_url": "/",
   "display": "standalone",
   "orientation": "portrait-primary",
-  "background_color": "#0d0e12",
-  "theme_color": "#6366f1",
+  "background_color": "#0a0b0e",
+  "theme_color": "#0a0b0e",
   "icons": [
     {
       "src": "/pwa-192.jpg",

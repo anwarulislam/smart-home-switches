@@ -1,4 +1,4 @@
-# 🏠 Smart Life (`smart-life`)
+# 🏠 Smart Life Switcher (`smart-life-switcher`)
 
 A sleek, responsive, and beautiful smart home dashboard designed for controlling Tuya-compatible devices (switches, sockets, lights, and curtains) directly from your web browser.
 
@@ -9,7 +9,7 @@ It leverages a serverless architecture designed to run locally, on a Node.js pro
 ## ✨ Features
 
 - **Device Support:** Switch and toggle Tuya-compatible smart sockets, light switches, multi-gang switch boxes, smart curtains, and lamps.
-- **Secure Signing Proxy:** Features a server-side signing proxy for the Tuya Open API. All requests are securely hashed and signed (`HMAC-SHA256`) on the backend (Vite plugin in dev, Express in Node prod, Cloudflare Worker in serverless prod) to prevent credential exposure.
+- **Secure Signing Proxy:** Features a server-side signing proxy for the Tuya Open API. All requests are securely hashed and signed (`HMAC-SHA256`) on the backend (Vite plugin in dev, Express in Node prod, and Cloudflare Worker in serverless prod) to prevent credential exposure.
 - **Client-Side Persistence:** Configuration credentials (Tuya Access ID, Access Secret, and Region), cached device lists, and customized switch names are saved securely in your browser's `localStorage`.
 - **Customizable Dashboard:** Easily hide/show active switches and rename them directly within the UI to fit your home layout.
 
@@ -18,9 +18,7 @@ It leverages a serverless architecture designed to run locally, on a Node.js pro
 ## 🚀 Getting Started
 
 ### 📋 Prerequisites
-
 You will need a Tuya Developer Account and Cloud Credentials:
-
 1. Sign up at the [Tuya Developer Platform](https://iot.tuya.com/).
 2. Create a **Cloud Project** and link your devices using the **Tuya Smart** or **Smart Life** app.
 3. Under **Cloud > Authorization**, obtain your:
@@ -33,34 +31,25 @@ You will need a Tuya Developer Account and Cloud Credentials:
 ## 🛠️ Local Development
 
 ### 1. Install Dependencies
-
 Clone the repository and install the dependencies:
-
 ```bash
 npm install
 ```
 
 ### 2. Run the Development Server
-
 Start the Vite development server:
-
 ```bash
 npm run dev
 ```
-
 > [!NOTE]
 > Vite config has a built-in `tuya-proxy` plugin. When you make requests to `/api/tuya*`, Vite automatically intercepts them, signs them with your local credentials, and proxies them directly to Tuya. You do not need to run a separate backend server in development!
 
 ### 3. Build & Preview
-
 To compile the TypeScript project and bundle the frontend into static assets:
-
 ```bash
 npm run build
 ```
-
 To run a local server previewing the production build:
-
 ```bash
 npm run preview
 ```
@@ -69,12 +58,10 @@ npm run preview
 
 ## 🌐 Production Server Environments
 
-You can run `our-home-switcher` in two production environments:
+You can run `smart-life-switcher` in two production environments:
 
 ### Option A: Local Node.js Production Server (Express)
-
 If you want to host the app on a local home server (e.g., Raspberry Pi):
-
 1. Build the frontend assets:
    ```bash
    npm run build
@@ -86,9 +73,7 @@ If you want to host the app on a local home server (e.g., Raspberry Pi):
    This starts the proxy server on port `5173` (or configured `PORT` env variable) and serves the `dist/` directory.
 
 ### Option B: Cloudflare Workers (Serverless)
-
 The project is configured for Cloudflare Workers (using Wrangler and Workers Assets).
-
 - **Run Wrangler Dev locally:**
   ```bash
   npx wrangler dev
@@ -104,36 +89,32 @@ The project is configured for Cloudflare Workers (using Wrangler and Workers Ass
 
 We have configured a GitHub Actions workflow to automatically deploy pushes to the `main` branch to Cloudflare.
 
-The workflow configuration is located in [.github/workflows/deploy.yml](file:///Users/anwar/Documents/projects/personal/our-home/.github/workflows/deploy.yml).
+The workflow configuration is located in [./.github/workflows/deploy.yml](./.github/workflows/deploy.yml).
 
 ### Secrets Required in GitHub
-
 To activate the automatic deployment, add the following to your GitHub repository secrets:
-
 1. `CLOUDFLARE_API_TOKEN` (API Token with edit access to Workers)
 2. `CLOUDFLARE_ACCOUNT_ID` (Your Cloudflare account ID)
-
-Refer to the [Cloudflare Deployment Setup Guide](file:///Users/anwar/.gemini/antigravity-cli/brain/02fe2751-cd62-4730-b5d9-d0a8edf6d5fa/cloudflare_deployment_setup.md) for a step-by-step walkthrough on retrieving these credentials.
 
 ---
 
 ## 📂 Project Structure
 
-- **[.github/workflows/](file:///Users/anwar/Documents/projects/personal/our-home/.github/workflows/)**: GitHub Action deployment workflows.
-- **[src/](file:///Users/anwar/Documents/projects/personal/our-home/src/)**: Frontend React codebase.
-  - **[src/App.tsx](file:///Users/anwar/Documents/projects/personal/our-home/src/App.tsx)**: Main dashboard page layout, config panels, and state management.
-  - **[src/components/DashboardTile.tsx](file:///Users/anwar/Documents/projects/personal/our-home/src/components/DashboardTile.tsx)**: Reusable switch controller card component.
-  - **[src/tuyaApi.ts](file:///Users/anwar/Documents/projects/personal/our-home/src/tuyaApi.ts)**: Local storage helpers, command parsing, and request helpers.
-- **[server.js](file:///Users/anwar/Documents/projects/personal/our-home/server.js)**: Local Node Express proxy.
-- **[worker.ts](file:///Users/anwar/Documents/projects/personal/our-home/worker.ts)**: Production Cloudflare Workers fetch handler.
-- **[wrangler.toml](file:///Users/anwar/Documents/projects/personal/our-home/wrangler.toml)**: Cloudflare Wrangler config file.
-- **[vite.config.ts](file:///Users/anwar/Documents/projects/personal/our-home/vite.config.ts)**: Custom Vite setup containing the development API proxy plugin.
+- **[./.github/workflows/](./.github/workflows/)**: GitHub Action deployment workflows.
+- **[./src/](./src/)**: Frontend React codebase.
+  - **[./src/App.tsx](./src/App.tsx)**: Main dashboard page layout, config panels, and state management.
+  - **[./src/components/DashboardTile.tsx](./src/components/DashboardTile.tsx)**: Reusable switch controller card component.
+  - **[./src/tuyaApi.ts](./src/tuyaApi.ts)**: Local storage helpers, command parsing, and request helpers.
+- **[./server.js](./server.js)**: Local Node Express proxy.
+- **[./worker.ts](./worker.ts)**: Production Cloudflare Workers fetch handler.
+- **[./wrangler.toml](./wrangler.toml)**: Cloudflare Wrangler config file.
+- **[./vite.config.ts](./vite.config.ts)**: Custom Vite setup containing the development API proxy plugin.
 
 ---
 
 ## 🤝 Contributing
 
-Contributions to improve `our-home-switcher` are welcome! Please follow these guidelines:
+Contributions to improve `smart-life-switcher` are welcome! Please follow these guidelines:
 
 1. **Fork** the repository and create your feature branch:
    ```bash
@@ -152,5 +133,4 @@ Contributions to improve `our-home-switcher` are welcome! Please follow these gu
 ---
 
 ## 📝 License
-
 This project is private and intended for personal home automation dashboard use.

@@ -1,4 +1,4 @@
-const CACHE_NAME = 'our-home-v1';
+const CACHE_NAME = 'smart-life-v1';
 const ASSETS = [
   '/',
   '/index.html',
