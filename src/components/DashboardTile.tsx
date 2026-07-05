@@ -103,7 +103,7 @@ export const DashboardTile: React.FC<DashboardTileProps> = ({
         if (Array.isArray(parsed.range)) {
           return parsed.range;
         }
-      } catch (e) {}
+      } catch {}
     }
     // Return only the current value as a fallback if functions are not yet loaded/cached
     return speedStatus?.value ? [String(speedStatus.value)] : [];
