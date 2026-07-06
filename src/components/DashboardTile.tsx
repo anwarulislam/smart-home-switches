@@ -1,9 +1,11 @@
 import React from "react";
-import { Lightbulb, Power, Trash2, Loader2, Fan, Edit2 } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import type { Device, FunctionItem } from "../tuyaApi";
-import { Switch } from "@/components/ui/switch";
-import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { TileHeader } from "./dashboard-tile/TileHeader";
+import { TileIcon } from "./dashboard-tile/TileIcon";
+import { TileInfo } from "./dashboard-tile/TileInfo";
+import { TileSpeedControls } from "./dashboard-tile/TileSpeedControls";
 
 interface DashboardTileProps {
   tile: {
@@ -18,7 +20,7 @@ interface DashboardTileProps {
   };
   isEditMode: boolean;
   isToggling: boolean;
-  onToggle: () => void;
+  onToggle: (targetValue: boolean) => void;
   onRemove: (e: React.MouseEvent) => void;
   onSendCommand: (code: string, value: string | number | boolean) => Promise<void>;
   onRename: (newName: string) => void;
@@ -49,30 +51,13 @@ export const DashboardTile: React.FC<DashboardTileProps> = ({
   isDragging,
   dragOverSide,
 }) => {
-  const [isEditing, setIsEditing] = React.useState(false);
-  const [tempName, setTempName] = React.useState(tile.name);
-
-  React.useEffect(() => {
-    setTempName(tile.name);
-  }, [tile.name]);
-
-  const handleSaveName = () => {
-    setIsEditing(false);
-    onRename(tempName.trim());
-  };
-
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Enter") {
-      handleSaveName();
-    } else if (e.key === "Escape") {
-      setIsEditing(false);
-      setTempName(tile.name);
-    }
-  };
-
-  const handleSpeedClick = (e: React.MouseEvent, speedVal: string) => {
-    e.stopPropagation(); // Avoid toggling the main power state
+  const handleSpeedClick = async (e: React.MouseEvent, speedVal: string) => {
+    e.stopPropagation();
     if (tile.online && speedStatus) {
+      if (!tile.value) {
+        // If the fan is OFF, turn it ON first, then set the speed
+        await onToggle(true);
+      }
       onSendCommand(speedStatus.code, speedVal);
     }
   };
@@ -82,6 +67,18 @@ export const DashboardTile: React.FC<DashboardTileProps> = ({
     tile.code.toLowerCase().includes("fan") ||
     tile.category.toLowerCase().includes("fan") ||
     tile.device.name.toLowerCase().includes("fan");
+
+  // Identify if this is a light switch
+  const isLight =
+    tile.code.toLowerCase().includes("light") ||
+    tile.code.toLowerCase().includes("lamp") ||
+    tile.code.toLowerCase().includes("bulb") ||
+    tile.category.toLowerCase().includes("light") ||
+    tile.category.toLowerCase().includes("dj") ||
+    tile.device.name.toLowerCase().includes("light") ||
+    tile.device.name.toLowerCase().includes("lamp") ||
+    tile.device.name.toLowerCase().includes("bulb") ||
+    tile.device.name.toLowerCase().includes("spotlight");
 
   // Search if the device has a matching enum status control
   const speedStatus = tile.device.status.find((s) => {
@@ -142,10 +139,24 @@ export const DashboardTile: React.FC<DashboardTileProps> = ({
     return "2s";
   };
 
+  // Determine card background styles based on device state
+  const getCardBgClass = () => {
+    if (!tile.online) return "bg-card/40 border-border/50 opacity-60";
+    if (!tile.value) return "bg-card/60 border-border/80 md:hover:border-border md:hover:bg-card/80 md:hover:shadow-md";
+    
+    if (isLight) {
+      return "bg-gradient-to-br from-amber-500/10 via-card/90 to-card/75 border-amber-500/30 shadow-lg shadow-amber-500/4";
+    }
+    if (isFan) {
+      return "bg-gradient-to-br from-cyan-500/10 via-card/90 to-card/75 border-cyan-500/30 shadow-lg shadow-cyan-500/4";
+    }
+    return "bg-gradient-to-br from-primary/10 via-card/90 to-card/75 border-primary/30 shadow-lg shadow-primary/4";
+  };
+
   return (
     <div
       data-key={`${tile.deviceId}:${tile.code}`}
-      onClick={() => !isEditMode && tile.online && onToggle()}
+      onClick={() => !isEditMode && tile.online && onToggle(!tile.value)}
       draggable={draggable}
       onDragStart={onDragStart}
       onDragOver={onDragOver}
@@ -153,13 +164,12 @@ export const DashboardTile: React.FC<DashboardTileProps> = ({
       onDrop={onDrop}
       onDragEnd={onDragEnd}
       style={{
-        cursor: isEditMode ? "grab" : tile.online ? "pointer" : "not-allowed",
-        minHeight: speedStatus ? "210px" : "160px",
+        cursor: isEditMode ? "grab" : tile.online ? "pointer" : "default",
       }}
       className={cn(
-        "group relative flex flex-col justify-between p-5 rounded-2xl border border-border bg-card/60 backdrop-blur-md transition-all duration-300 hover:-translate-y-1 hover:border-border/80 hover:bg-card/80 hover:shadow-md",
-        tile.value && tile.online && "border-primary/40 shadow-lg shadow-primary/5",
-        !tile.online && "opacity-60",
+        "group relative flex flex-col justify-between p-4 sm:p-5 rounded-2xl border transition-all duration-300 select-none",
+        getCardBgClass(),
+        speedStatus ? "min-h-[270px] sm:min-h-[290px]" : "min-h-[210px] sm:min-h-[220px]",
         isDragging && "opacity-40 scale-95 border-dashed border-primary",
         dragOverSide === "left" && "border-l-4 border-l-primary",
         dragOverSide === "right" && "border-r-4 border-r-primary"
@@ -168,145 +178,77 @@ export const DashboardTile: React.FC<DashboardTileProps> = ({
       {/* Visual Accent Top Line on Hover or Switch Active */}
       <div
         className={cn(
-          "absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-primary to-cyan-500 transition-opacity duration-300",
-          tile.value && tile.online ? "opacity-100" : "opacity-0 group-hover:opacity-60"
+          "absolute top-0 left-0 right-0 h-[2px] transition-opacity duration-300",
+          tile.value && tile.online
+            ? isLight
+              ? "opacity-100 bg-gradient-to-r from-amber-400 to-orange-500"
+              : isFan
+              ? "opacity-100 bg-gradient-to-r from-cyan-400 to-blue-500"
+              : "opacity-100 bg-gradient-to-r from-primary to-cyan-500"
+            : "opacity-0 md:group-hover:opacity-60 bg-muted-foreground/30"
         )}
       />
 
-      <div className="flex justify-between items-start mb-3">
-        <div
+      {/* Loading Overlay */}
+      {isToggling && (
+        <div className="absolute inset-0 bg-background/50 backdrop-blur-xs flex items-center justify-center rounded-2xl z-30 transition-all">
+          <Loader2 className="animate-spin text-primary h-8 w-8" />
+        </div>
+      )}
+
+      {/* Top Header Row (Online Status Badge / Remove Button) */}
+      <TileHeader
+        isEditMode={isEditMode}
+        online={tile.online}
+        onRemove={onRemove}
+      />
+
+      {/* Central Visual Control Area */}
+      <div className="flex flex-col items-center justify-center py-2 flex-1 w-full">
+        <TileIcon
+          value={tile.value}
+          online={tile.online}
+          isFan={isFan}
+          isLight={isLight}
+          fanSpeedDuration={getFanSpeedDuration()}
+        />
+
+        <TileInfo
+          isEditMode={isEditMode}
+          name={tile.name}
+          category={tile.category}
+          deviceName={tile.device.name}
+          onRename={onRename}
+        />
+
+        {/* Large State Status Pill */}
+        <span
           className={cn(
-            "w-11 h-11 rounded-xl flex items-center justify-center transition-all duration-300",
+            "text-[10px] font-black uppercase tracking-wider px-2.5 py-0.5 rounded-full select-none border",
             tile.value && tile.online
-              ? "bg-primary/15 text-primary shadow-sm"
-              : "bg-muted-foreground/5 text-muted-foreground"
+              ? isLight
+                ? "bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20"
+                : isFan
+                ? "bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 border-cyan-500/20"
+                : "bg-primary/10 text-primary border-primary/20"
+              : "bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 border-transparent"
           )}
         >
-          {isFan ? (
-            <Fan
-              size={20}
-              className={tile.value && tile.online ? "spinning-fan" : ""}
-              style={{
-                "--fan-speed-duration": getFanSpeedDuration(),
-              } as React.CSSProperties}
-            />
-          ) : tile.value && tile.online ? (
-            <Lightbulb size={20} />
-          ) : (
-            <Power size={20} />
-          )}
-        </div>
-        {isEditMode && (
-          <Button
-            variant="ghost"
-            size="icon"
-            className="h-8 w-8 text-muted-foreground hover:text-destructive hover:bg-destructive/10 rounded-md cursor-pointer"
-            onClick={onRemove}
-            title="Remove from Dashboard"
-          >
-            <Trash2 size={15} />
-          </Button>
-        )}
-      </div>
-
-      <div className="mb-5 flex-1 min-w-0">
-        {isEditing && isEditMode ? (
-          <input
-            type="text"
-            className="w-full bg-muted border border-border rounded-md px-2 py-1 text-sm font-semibold text-foreground focus:outline-hidden focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
-            value={tempName}
-            onChange={(e) => setTempName(e.target.value)}
-            onBlur={handleSaveName}
-            onKeyDown={handleKeyDown}
-            autoFocus
-            onClick={(e) => e.stopPropagation()}
-          />
-        ) : (
-          <div className="flex items-center gap-1.5 w-full" onClick={(e) => e.stopPropagation()}>
-            <h3
-              className={cn(
-                "text-base font-semibold text-foreground truncate select-none",
-                isEditMode && "cursor-text hover:text-primary transition-colors"
-              )}
-              onDoubleClick={() => isEditMode && setIsEditing(true)}
-            >
-              {tile.name}
-            </h3>
-            {isEditMode && (
-              <button
-                className="opacity-0 group-hover:opacity-100 p-1 text-muted-foreground/50 hover:text-primary transition-all cursor-pointer"
-                onClick={() => setIsEditing(true)}
-                title="Rename switch"
-              >
-                <Edit2 size={12} />
-              </button>
-            )}
-          </div>
-        )}
-        <div className="text-[10px] text-muted-foreground/75 font-semibold tracking-wide flex items-center gap-1.5 uppercase mt-1 truncate">
-          <span>{tile.category}</span>
-          <span className="text-muted-foreground/30">•</span>
-          <span className="truncate">{tile.device.name}</span>
-        </div>
+          {tile.online ? (tile.value ? "ON" : "OFF") : "OFFLINE"}
+        </span>
       </div>
 
       {/* Fan Speed Controls Section */}
       {speedStatus && (
-        <div className="mt-2 mb-4 flex flex-col gap-1.5 w-full" onClick={(e) => e.stopPropagation()}>
-          <div className="text-[10px] text-muted-foreground/70 font-bold tracking-wider uppercase">
-            Speed: {formatSpeedLabel(String(speedStatus.value))}
-          </div>
-          <div className="flex bg-muted/50 border border-border/30 rounded-lg p-0.5">
-            {speedRange.map((speedVal) => (
-              <button
-                key={speedVal}
-                className={cn(
-                  "flex-1 py-1 text-[10px] font-bold text-muted-foreground hover:text-foreground rounded-md transition-all text-center disabled:opacity-40 disabled:pointer-events-none cursor-pointer",
-                  speedStatus.value === speedVal && "bg-primary text-primary-foreground shadow-sm shadow-primary/20 hover:text-primary-foreground"
-                )}
-                disabled={!tile.online || !tile.value}
-                onClick={(e) => handleSpeedClick(e, speedVal)}
-              >
-                {formatSpeedLabel(speedVal)}
-              </button>
-            ))}
-          </div>
-        </div>
+        <TileSpeedControls
+          online={tile.online}
+          value={tile.value}
+          speedStatusValue={speedStatus.value}
+          speedRange={speedRange}
+          onSpeedClick={handleSpeedClick}
+          formatSpeedLabel={formatSpeedLabel}
+        />
       )}
-
-      <div className={cn("flex justify-between items-center", speedStatus ? "mt-1" : "mt-0")}>
-        <span
-          className={cn(
-            "inline-flex items-center gap-1 text-[11px] font-bold px-2 py-0.5 rounded-full transition-colors",
-            tile.online
-              ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400"
-              : "bg-rose-500/10 text-rose-600 dark:text-rose-400"
-          )}
-        >
-          <span
-            className={cn(
-              "w-1.5 h-1.5 rounded-full",
-              tile.online ? "bg-emerald-500 dark:bg-emerald-400" : "bg-rose-500 dark:bg-rose-400"
-            )}
-          />
-          <span>{tile.online ? "Online" : "Offline"}</span>
-        </span>
-
-        {isToggling ? (
-          <Loader2
-            size={18}
-            className="animate-spin text-primary mr-3"
-          />
-        ) : (
-          <div onClick={(e) => e.stopPropagation()}>
-            <Switch
-              checked={tile.value}
-              disabled={!tile.online}
-              onCheckedChange={onToggle}
-            />
-          </div>
-        )}
-      </div>
     </div>
   );
 };

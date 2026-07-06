@@ -59,7 +59,7 @@ export default function App() {
   } = useTuyaDashboard();
 
   return (
-    <div className="flex flex-col h-screen w-full max-w-[1400px] mx-auto p-6 overflow-hidden transition-colors">
+    <div className="flex flex-col h-screen w-full max-w-[1400px] mx-auto p-4 sm:p-6 overflow-hidden transition-colors">
       {/* Toast Alert System */}
       <ToastContainer toasts={toasts} onRemoveToast={removeToast} />
 
@@ -114,7 +114,7 @@ export default function App() {
                 </Button>
               </div>
             ) : (
-              <div className="grid grid-cols-[repeat(auto-fill,minmax(280px,1fr))] gap-5 mb-10" ref={tilesContainerRef}>
+              <div className="grid grid-cols-2 md:grid-cols-[repeat(auto-fill,minmax(280px,1fr))] gap-3 sm:gap-5 mb-10" ref={tilesContainerRef}>
                 {dashboardTiles.map((tile: any) => {
                   const key = `${tile.deviceId}:${tile.code}`;
                   return (
@@ -123,8 +123,8 @@ export default function App() {
                       tile={tile}
                       isEditMode={isEditMode}
                       isToggling={togglingKeys.has(key)}
-                      onToggle={() =>
-                        handleToggleSwitch(tile.deviceId, tile.code, tile.value)
+                      onToggle={(targetValue: boolean) =>
+                        handleToggleSwitch(tile.deviceId, tile.code, !targetValue)
                       }
                       onRemove={(e) =>
                         handleRemoveSwitch(tile.deviceId, tile.code, e)
@@ -150,10 +150,10 @@ export default function App() {
                 {/* Add Switch grid tile shortcut */}
                 {isEditMode && (
                   <div
-                    className="group flex flex-col items-center justify-center border-2 border-dashed border-border hover:border-primary rounded-2xl p-6 min-h-[160px] cursor-pointer hover:bg-primary/5 text-muted-foreground hover:text-foreground transition-all duration-300 hover:-translate-y-1"
+                    className="group flex flex-col items-center justify-center border-2 border-dashed border-border md:hover:border-primary rounded-2xl p-4 sm:p-6 min-h-[150px] sm:min-h-[160px] cursor-pointer md:hover:bg-primary/5 text-muted-foreground md:hover:text-foreground transition-all duration-300 md:hover:-translate-y-1"
                     onClick={() => setIsAddSwitchOpen(true)}
                   >
-                    <div className="w-11 h-11 rounded-full bg-muted flex items-center justify-center mb-3 group-hover:bg-primary/15 group-hover:text-primary transition-all duration-300">
+                    <div className="w-11 h-11 rounded-full bg-muted flex items-center justify-center mb-3 md:group-hover:bg-primary/15 md:group-hover:text-primary transition-all duration-300">
                       <Plus size={20} />
                     </div>
                     <span className="text-xs font-semibold uppercase tracking-wider">
