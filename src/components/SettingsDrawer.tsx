@@ -1,5 +1,5 @@
 import React from "react";
-import { Settings, X, Plus, Loader2, RefreshCw, Database } from "lucide-react";
+import { Settings, X, Plus, Loader2, RefreshCw, Database, Download } from "lucide-react";
 import type { Device } from "../tuyaApi";
 
 interface SettingsDrawerProps {
@@ -25,6 +25,9 @@ interface SettingsDrawerProps {
   onSyncDevices: () => void;
   onDisconnect: () => void;
   devices: Device[];
+  isInstallable?: boolean;
+  isInstalled?: boolean;
+  onInstallApp?: () => void;
 }
 
 export const SettingsDrawer: React.FC<SettingsDrawerProps> = ({
@@ -50,6 +53,9 @@ export const SettingsDrawer: React.FC<SettingsDrawerProps> = ({
   onSyncDevices,
   onDisconnect,
   devices,
+  isInstallable = false,
+  isInstalled = false,
+  onInstallApp,
 }) => {
   if (!isOpen) return null;
 
@@ -82,6 +88,62 @@ export const SettingsDrawer: React.FC<SettingsDrawerProps> = ({
         </div>
 
         <div className="modal-body">
+          {/* PWA Installation Section */}
+          {(isInstallable || isInstalled) && (
+            <div
+              style={{
+                marginBottom: 20,
+                display: "flex",
+                flexDirection: "column",
+                gap: 12,
+                paddingBottom: 16,
+                borderBottom: "1px solid rgba(255,255,255,0.06)",
+              }}
+            >
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                }}
+              >
+                <span
+                  style={{
+                    fontSize: "0.85rem",
+                    fontWeight: 600,
+                    color: "var(--text-main)",
+                  }}
+                >
+                  App Installation
+                </span>
+                <span
+                  className={`status-badge ${isInstalled ? "status-online" : "status-offline"}`}
+                  style={{
+                    backgroundColor: isInstalled ? "rgba(16, 185, 129, 0.1)" : "rgba(99, 102, 241, 0.1)",
+                    color: isInstalled ? "var(--accent-success)" : "var(--accent-primary)",
+                  }}
+                >
+                  {isInstalled ? "Installed" : "Installable"}
+                </span>
+              </div>
+              {isInstallable && onInstallApp && (
+                <button
+                  type="button"
+                  className="btn btn-primary"
+                  style={{
+                    width: "100%",
+                    justifyContent: "center",
+                    background: "linear-gradient(135deg, var(--accent-secondary), var(--accent-primary))",
+                  }}
+                  onClick={onInstallApp}
+                >
+                  <Download size={16} />
+                  <span>Install Smart Life App</span>
+                </button>
+              )}
+            </div>
+          )}
+
           {/* Dashboard Controls (Edit Mode & Add Switch) */}
           {config && (
             <div

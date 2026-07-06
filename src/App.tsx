@@ -7,8 +7,10 @@ import { WelcomeScreen } from "./components/WelcomeScreen";
 import { AddSwitchesDrawer } from "./components/AddSwitchesDrawer";
 import { SettingsDrawer } from "./components/SettingsDrawer";
 import { ConnectionErrorModal } from "./components/ConnectionErrorModal";
+import { usePWAInstall } from "./hooks/usePWAInstall";
 
 export default function App() {
+  const { isInstallable, isInstalled, installApp } = usePWAInstall();
   const {
     config,
     devices,
@@ -72,7 +74,7 @@ export default function App() {
       />
 
       {/* Main Content Area */}
-      <main style={{ flex: 1 }}>
+      <main className="app-main">
         {!config ? (
           /* Welcome Form (First run) */
           <WelcomeScreen
@@ -202,6 +204,9 @@ export default function App() {
         onSyncDevices={handleSyncDevices}
         onDisconnect={handleDisconnect}
         devices={devices}
+        isInstallable={isInstallable}
+        isInstalled={isInstalled}
+        onInstallApp={installApp}
       />
 
       {/* Modal: Connection Retry */}

@@ -45,14 +45,21 @@
   box-sizing: border-box;
   margin: 0;
   padding: 0;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(99, 102, 241, 0.25) rgba(255, 255, 255, 0.01);
 }
 
-body {
+html, body {
   background-color: var(--bg-primary);
   color: var(--text-main);
   font-family: var(--font-family);
-  min-height: 100vh;
-  overflow-x: hidden;
+  height: 100vh;
+  height: 100dvh;
+  width: 100vw;
+  overflow: hidden;
+  position: fixed;
+  top: 0;
+  left: 0;
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
   background-image: 
@@ -72,10 +79,47 @@ h1, h2, h3, h4 {
 .app-container {
   display: flex;
   flex-direction: column;
-  min-height: 100vh;
+  height: 100vh;
+  height: 100dvh;
+  width: 100%;
   max-width: 1400px;
   margin: 0 auto;
   padding: 24px;
+  overflow: hidden;
+}
+
+/* Main container with custom scrollbar */
+.app-main {
+  flex: 1;
+  overflow-y: auto;
+  padding-right: 8px;
+  margin-right: -8px;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Custom Scrollbar System */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.01);
+  border-radius: var(--radius-full);
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(99, 102, 241, 0.25);
+  border-radius: var(--radius-full);
+  border: 1px solid transparent;
+  background-clip: padding-box;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(99, 102, 241, 0.5);
+  border: 1px solid transparent;
+  background-clip: padding-box;
 }
 
 /* Header */
@@ -646,10 +690,11 @@ input:disabled + .switch-slider {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  min-height: 80vh;
+  flex: 1;
   max-width: 480px;
   margin: 0 auto;
   text-align: center;
+  padding: 20px 0;
 }
 
 .welcome-logo-large {
@@ -842,7 +887,7 @@ input:disabled + .switch-slider {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  min-height: 40vh;
+  flex: 1;
   text-align: center;
   color: var(--text-muted);
   padding: 40px;
