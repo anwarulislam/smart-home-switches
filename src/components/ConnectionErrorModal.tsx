@@ -1,5 +1,6 @@
 import React from "react";
 import { WifiOff, X } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 interface ConnectionErrorModalProps {
   error: string | null;
@@ -17,79 +18,57 @@ export const ConnectionErrorModal: React.FC<ConnectionErrorModalProps> = ({
   if (!error) return null;
 
   return (
-    <div className="modal-overlay" onClick={onClose}>
+    <div
+      className="fixed inset-0 bg-black/60 backdrop-blur-xs z-50 flex items-center justify-center p-4 animate-fade-in"
+      onClick={onClose}
+    >
       <div
-        className="modal-content"
+        className="w-full max-w-[440px] bg-popover border border-border rounded-2xl shadow-2xl flex flex-col overflow-hidden animate-slide-up"
         onClick={(e) => e.stopPropagation()}
-        style={{ maxWidth: 440 }}
       >
-        <div className="modal-header">
-          <h2
-            className="modal-title"
-            style={{ color: "var(--accent-error)" }}
-          >
+        <div className="p-6 border-b border-border flex justify-between items-center">
+          <h2 className="text-lg font-bold flex items-center gap-2 text-destructive">
             <WifiOff size={20} />
             <span>Connection Failed</span>
           </h2>
-          <button
-            className="btn-ghost btn-icon-only"
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-9 w-9 text-muted-foreground hover:text-foreground cursor-pointer"
             onClick={onClose}
             aria-label="Close error dialog"
           >
             <X size={18} />
-          </button>
+          </Button>
         </div>
 
-        <div
-          className="modal-body"
-          style={{ textAlign: "center", padding: "24px" }}
-        >
-          <p
-            style={{
-              color: "var(--text-main)",
-              fontWeight: 500,
-              marginBottom: 12,
-            }}
-          >
+        <div className="p-6 text-center">
+          <p className="text-sm font-semibold text-foreground mb-3">
             An error occurred while connecting to Tuya Cloud:
           </p>
-          <div
-            style={{
-              background: "rgba(244, 63, 94, 0.05)",
-              border: "1px dashed rgba(244, 63, 94, 0.2)",
-              color: "var(--accent-error)",
-              padding: "12px",
-              borderRadius: "8px",
-              fontFamily: "monospace",
-              fontSize: "0.85rem",
-              wordBreak: "break-word",
-              marginBottom: 20,
-            }}
-          >
+          <div className="bg-destructive/5 border border-dashed border-destructive/20 text-destructive text-xs font-mono p-4 rounded-lg break-all mb-5 select-all text-left">
             {error}
           </div>
-          <p style={{ color: "var(--text-muted)", fontSize: "0.85rem" }}>
-            Would you like to retry using your saved credentials, or edit
-            them in settings?
+          <p className="text-xs text-muted-foreground leading-relaxed">
+            Would you like to retry using your saved credentials, or edit them in settings?
           </p>
         </div>
 
-        <div
-          className="modal-footer"
-          style={{ justifyContent: "center", gap: 12 }}
-        >
-          <button
-            className="btn btn-primary"
+        <div className="p-5 border-t border-border flex justify-center gap-3 bg-muted/10">
+          <Button
+            variant="default"
+            className="px-5 shadow-xs cursor-pointer"
             onClick={onRetry}
           >
             Retry Connection
-          </button>
-          <button
-            className="btn btn-secondary"
+          </Button>
+          <Button
+            variant="secondary"
+            className="px-5 cursor-pointer"
             onClick={onEditSettings}
           >
             Edit Settings
-          </button>
+          </Button>
         </div>
       </div>
     </div>

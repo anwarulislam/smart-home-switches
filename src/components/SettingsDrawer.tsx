@@ -1,6 +1,11 @@
 import React from "react";
 import { Settings, X, Plus, Loader2, RefreshCw, Database, Download } from "lucide-react";
 import type { Device } from "../tuyaApi";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Select } from "@/components/ui/select";
+import { Switch } from "@/components/ui/switch";
+import { cn } from "@/lib/utils";
 
 interface SettingsDrawerProps {
   isOpen: boolean;
@@ -60,147 +65,119 @@ export const SettingsDrawer: React.FC<SettingsDrawerProps> = ({
   if (!isOpen) return null;
 
   return (
-    <div className="modal-overlay" onClick={onClose}>
-      <div className="drawer-content" onClick={(e) => e.stopPropagation()}>
-        <div className="modal-header">
-          <h2 className="modal-title">
-            <Settings size={20} className="text-indigo-400" />
+    <div
+      className="fixed inset-0 bg-black/60 backdrop-blur-xs z-50 flex justify-end animate-fade-in"
+      onClick={onClose}
+    >
+      <div
+        className="w-full max-w-[480px] bg-popover border-l border-border shadow-2xl h-full flex flex-col animate-slide-left"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="p-6 border-b border-border flex justify-between items-center">
+          <h2 className="text-lg font-semibold flex items-center gap-2 text-foreground">
+            <Settings size={20} className="text-primary" />
             <span>Dashboard Control</span>
           </h2>
-          <button className="btn-ghost btn-icon-only" onClick={onClose} aria-label="Close settings">
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-9 w-9 text-muted-foreground hover:text-foreground cursor-pointer"
+            onClick={onClose}
+            aria-label="Close settings"
+          >
             <X size={18} />
-          </button>
+          </Button>
         </div>
 
-        <div className="tabs">
-          <div
-            className={`tab ${settingsTab === "discovered" ? "active" : ""}`}
+        <div className="flex border-b border-border bg-muted/20">
+          <button
+            className={cn(
+              "flex-1 text-center py-3.5 text-xs font-bold uppercase tracking-wider transition-all cursor-pointer border-b-2 hover:bg-muted/10",
+              settingsTab === "discovered"
+                ? "text-primary border-primary bg-primary/5 font-bold"
+                : "text-muted-foreground border-transparent hover:text-foreground"
+            )}
             onClick={() => setSettingsTab("discovered")}
           >
-            Device Specs ({devices.length})
-          </div>
-          <div
-            className={`tab ${settingsTab === "credentials" ? "active" : ""}`}
+            Specs ({devices.length})
+          </button>
+          <button
+            className={cn(
+              "flex-1 text-center py-3.5 text-xs font-bold uppercase tracking-wider transition-all cursor-pointer border-b-2 hover:bg-muted/10",
+              settingsTab === "credentials"
+                ? "text-primary border-primary bg-primary/5 font-bold"
+                : "text-muted-foreground border-transparent hover:text-foreground"
+            )}
             onClick={() => setSettingsTab("credentials")}
           >
             Connection
-          </div>
+          </button>
         </div>
 
-        <div className="modal-body">
+        <div className="p-6 overflow-y-auto flex-1 space-y-6">
           {/* PWA Installation Section */}
           {(isInstallable || isInstalled) && (
-            <div
-              style={{
-                marginBottom: 20,
-                display: "flex",
-                flexDirection: "column",
-                gap: 12,
-                paddingBottom: 16,
-                borderBottom: "1px solid rgba(255,255,255,0.06)",
-              }}
-            >
-              <div
-                style={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                }}
-              >
-                <span
-                  style={{
-                    fontSize: "0.85rem",
-                    fontWeight: 600,
-                    color: "var(--text-main)",
-                  }}
-                >
+            <div className="space-y-3 pb-5 border-b border-border/60">
+              <div className="flex justify-between items-center">
+                <span className="text-xs font-bold text-muted-foreground uppercase tracking-wide">
                   App Installation
                 </span>
                 <span
-                  className={`status-badge ${isInstalled ? "status-online" : "status-offline"}`}
-                  style={{
-                    backgroundColor: isInstalled ? "rgba(16, 185, 129, 0.1)" : "rgba(99, 102, 241, 0.1)",
-                    color: isInstalled ? "var(--accent-success)" : "var(--accent-primary)",
-                  }}
+                  className={cn(
+                    "inline-flex items-center gap-1 text-[11px] font-semibold px-2.5 py-0.5 rounded-full",
+                    isInstalled
+                      ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400"
+                      : "bg-primary/10 text-primary dark:text-primary-400"
+                  )}
                 >
                   {isInstalled ? "Installed" : "Installable"}
                 </span>
               </div>
               {isInstallable && onInstallApp && (
-                <button
+                <Button
                   type="button"
-                  className="btn btn-primary"
-                  style={{
-                    width: "100%",
-                    justifyContent: "center",
-                    background: "linear-gradient(135deg, var(--accent-secondary), var(--accent-primary))",
-                  }}
+                  className="w-full bg-gradient-to-r from-cyan-500 to-primary text-white font-medium hover:brightness-110 cursor-pointer shadow-sm"
                   onClick={onInstallApp}
                 >
                   <Download size={16} />
                   <span>Install Smart Life App</span>
-                </button>
+                </Button>
               )}
             </div>
           )}
 
           {/* Dashboard Controls (Edit Mode & Add Switch) */}
           {config && (
-            <div
-              style={{
-                marginBottom: 20,
-                display: "flex",
-                flexDirection: "column",
-                gap: 12,
-                paddingBottom: 16,
-                borderBottom: "1px solid rgba(255,255,255,0.06)",
-              }}
-            >
-              <div
-                style={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                }}
-              >
-                <span
-                  style={{
-                    fontSize: "0.85rem",
-                    fontWeight: 600,
-                    color: "var(--text-main)",
-                  }}
-                >
-                  Edit Mode (Rename & Drag-Reorder)
+            <div className="space-y-4 pb-5 border-b border-border/60">
+              <div className="flex justify-between items-center">
+                <span className="text-xs font-bold text-muted-foreground uppercase tracking-wide">
+                  Edit Mode (Rename & Reorder)
                 </span>
-                <label className="switch-control">
-                  <input
-                    type="checkbox"
-                    checked={isEditMode}
-                    onChange={(e) => setIsEditMode(e.target.checked)}
-                  />
-                  <span className="switch-slider" />
-                </label>
+                <Switch
+                  checked={isEditMode}
+                  onCheckedChange={setIsEditMode}
+                />
               </div>
-              <button
+              <Button
                 type="button"
-                className="btn btn-primary"
-                style={{ width: "100%", justifyContent: "center" }}
+                className="w-full cursor-pointer shadow-sm"
                 onClick={onOpenAddSwitches}
               >
                 <Plus size={16} />
                 <span>Add Switch Tiles</span>
-              </button>
+              </Button>
             </div>
           )}
 
           {settingsTab === "credentials" ? (
             /* Credentials Form inside Settings drawer */
-            <form onSubmit={onSaveConfig} style={{ textAlign: "left" }}>
-              <div className="form-group">
-                <label className="form-label">Access ID</label>
-                <input
+            <form onSubmit={onSaveConfig} className="space-y-5">
+              <div className="space-y-2">
+                <label className="block text-xs font-bold text-muted-foreground uppercase tracking-wider">
+                  Access ID
+                </label>
+                <Input
                   type="text"
-                  className="form-input"
                   value={formAccessId}
                   onChange={(e) => setFormAccessId(e.target.value)}
                   placeholder="Enter Access ID"
@@ -208,11 +185,12 @@ export const SettingsDrawer: React.FC<SettingsDrawerProps> = ({
                 />
               </div>
 
-              <div className="form-group">
-                <label className="form-label">Access Secret</label>
-                <input
+              <div className="space-y-2">
+                <label className="block text-xs font-bold text-muted-foreground uppercase tracking-wider">
+                  Access Secret
+                </label>
+                <Input
                   type="password"
-                  className="form-input"
                   value={formAccessSecret}
                   onChange={(e) => setFormAccessSecret(e.target.value)}
                   placeholder="Enter Access Secret"
@@ -220,10 +198,11 @@ export const SettingsDrawer: React.FC<SettingsDrawerProps> = ({
                 />
               </div>
 
-              <div className="form-group">
-                <label className="form-label">Region Endpoint</label>
-                <select
-                  className="form-select"
+              <div className="space-y-2">
+                <label className="block text-xs font-bold text-muted-foreground uppercase tracking-wider">
+                  Region Endpoint
+                </label>
+                <Select
                   value={formRegion}
                   onChange={(e) => setFormRegion(e.target.value)}
                 >
@@ -232,176 +211,133 @@ export const SettingsDrawer: React.FC<SettingsDrawerProps> = ({
                       {opt.label}
                     </option>
                   ))}
-                </select>
+                </Select>
               </div>
 
               {testStatus === "error" && (
-                <div
-                  style={{
-                    color: "var(--accent-error)",
-                    fontSize: "0.85rem",
-                    marginBottom: 16,
-                  }}
-                >
+                <div className="text-destructive text-sm font-medium">
                   ❌ {testErrorMessage}
                 </div>
               )}
 
-              <div
-                style={{
-                  display: "flex",
-                  flexDirection: "column",
-                  gap: 10,
-                  marginTop: 24,
-                }}
-              >
-                <button
+              <div className="flex flex-col gap-3 pt-4">
+                <Button
                   type="submit"
-                  className="btn btn-primary"
-                  style={{ justifyContent: "center" }}
+                  className="w-full cursor-pointer"
                   disabled={testStatus === "testing"}
                 >
                   {testStatus === "testing" ? (
                     <>
-                      <Loader2 size={16} className="spinning" />
+                      <Loader2 size={16} className="animate-spin" />
                       <span>Testing & Saving...</span>
                     </>
                   ) : (
                     <span>Verify & Update Credentials</span>
                   )}
-                </button>
+                </Button>
 
                 {config && (
-                  <button
+                  <Button
                     type="button"
-                    className="btn btn-secondary"
-                    style={{ justifyContent: "center" }}
+                    variant="outline"
+                    className="w-full cursor-pointer"
                     onClick={onSyncDevices}
                     disabled={isLoading}
                   >
                     <RefreshCw
                       size={16}
-                      className={isLoading ? "spinning" : ""}
+                      className={isLoading ? "animate-spin" : ""}
                     />
                     <span>Force Re-sync Devices</span>
-                  </button>
+                  </Button>
                 )}
 
                 {config && (
-                  <button
+                  <Button
                     type="button"
-                    className="btn btn-danger"
-                    style={{ justifyContent: "center", marginTop: 12 }}
+                    variant="destructive"
+                    className="w-full mt-4 cursor-pointer"
                     onClick={onDisconnect}
                   >
                     <span>Disconnect Tuya Account</span>
-                  </button>
+                  </Button>
                 )}
               </div>
             </form>
           ) : (
             /* Hardware Details Tab */
-            <div className="device-specs-list">
+            <div className="space-y-4">
               {devices.length === 0 ? (
-                <div
-                  style={{
-                    textAlign: "center",
-                    color: "var(--text-muted)",
-                    padding: "24px 0",
-                  }}
-                >
-                  <Database
-                    size={32}
-                    style={{ opacity: 0.3, marginBottom: 8 }}
-                  />
-                  <p>No discovered devices found.</p>
+                <div className="text-center text-muted-foreground py-12 flex flex-col items-center">
+                  <Database size={36} className="opacity-30 mb-2" />
+                  <p className="text-sm font-medium">No discovered devices found.</p>
                 </div>
               ) : (
                 devices.map((dev) => (
-                  <div key={dev.id} className="device-spec-card">
-                    <div className="device-spec-header">
-                      <h4 className="device-spec-name">{dev.name}</h4>
-                      <span className="device-spec-prop">
+                  <div
+                    key={dev.id}
+                    className="p-4 bg-muted/20 border border-border/80 rounded-xl space-y-3"
+                  >
+                    <div className="flex justify-between items-start">
+                      <h4 className="text-sm font-bold text-foreground truncate max-w-[70%]">
+                        {dev.name}
+                      </h4>
+                      <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-muted text-muted-foreground uppercase">
                         {dev.category}
                       </span>
                     </div>
-                    <div className="device-spec-body">
-                      <div className="device-spec-row">
-                        <span className="device-spec-label">Device ID</span>
-                        <span className="device-spec-val">{dev.id}</span>
+
+                    <div className="space-y-1.5 text-xs">
+                      <div className="flex justify-between">
+                        <span className="text-muted-foreground">Device ID</span>
+                        <span className="font-mono text-[11px] text-foreground/80 select-all">
+                          {dev.id}
+                        </span>
                       </div>
-                      <div className="device-spec-row">
-                        <span className="device-spec-label">Status</span>
+                      <div className="flex justify-between">
+                        <span className="text-muted-foreground">Status</span>
                         <span
-                          className="device-spec-val"
-                          style={{
-                            color: dev.online
-                              ? "var(--accent-success)"
-                              : "var(--accent-error)",
-                          }}
+                          className={cn(
+                            "font-semibold",
+                            dev.online
+                              ? "text-emerald-500"
+                              : "text-rose-500"
+                          )}
                         >
                           {dev.online ? "Online" : "Offline"}
                         </span>
                       </div>
-                      <div className="device-spec-row">
-                        <span className="device-spec-label">
-                          Product Name
-                        </span>
-                        <span className="device-spec-val">
+                      <div className="flex justify-between">
+                        <span className="text-muted-foreground">Product</span>
+                        <span className="text-foreground/85 truncate max-w-[65%]">
                           {dev.product_name}
                         </span>
                       </div>
 
-                      <div style={{ marginTop: 10 }}>
-                        <p
-                          style={{
-                            fontWeight: 600,
-                            fontSize: "0.75rem",
-                            marginBottom: 4,
-                            textTransform: "uppercase",
-                            letterSpacing: "0.05em",
-                          }}
-                        >
-                          Functions & Status Codes
-                        </p>
-                        <div
-                          style={{
-                            display: "flex",
-                            flexDirection: "column",
-                            gap: 4,
-                          }}
-                        >
+                      {/* Display device functions/status codes */}
+                      {dev.status && dev.status.length > 0 && (
+                        <div className="pt-2 border-t border-border/50 mt-2 space-y-1">
+                          <p className="font-bold text-[10px] text-muted-foreground uppercase tracking-wider mb-1">
+                            Functions & Status Codes
+                          </p>
                           {dev.status.map((stat) => (
                             <div
                               key={stat.code}
-                              className="device-spec-row"
-                              style={{
-                                paddingLeft: 8,
-                                borderLeft:
-                                  "2px solid rgba(255,255,255,0.05)",
-                              }}
+                              className="flex justify-between items-center text-[11px] pl-2 border-l border-border"
                             >
-                              <span style={{ fontSize: "0.75rem" }}>
+                              <span className="text-muted-foreground/90 truncate max-w-[60%]">
                                 {stat.name || stat.code}{" "}
-                                <span
-                                  style={{
-                                    color: "var(--text-dark)",
-                                    fontSize: "0.65rem",
-                                  }}
-                                >
+                                <span className="text-[9px] text-muted-foreground/50">
                                   ({stat.code})
                                 </span>
                               </span>
-                              <span
-                                className="device-spec-val"
-                                style={{ fontSize: "0.75rem" }}
-                              >
+                              <span className="font-mono font-semibold text-foreground/85">
                                 {String(stat.value)}
                               </span>
                             </div>
                           ))}
                         </div>
-                      </div>
+                      )}
                     </div>
                   </div>
                 ))
@@ -410,13 +346,10 @@ export const SettingsDrawer: React.FC<SettingsDrawerProps> = ({
           )}
         </div>
 
-        <div className="modal-footer">
-          <button
-            className="btn btn-secondary"
-            onClick={onClose}
-          >
+        <div className="p-5 border-t border-border flex justify-end bg-muted/10">
+          <Button variant="outline" className="px-6 cursor-pointer" onClick={onClose}>
             Close
-          </button>
+          </Button>
         </div>
       </div>
     </div>

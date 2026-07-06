@@ -8,6 +8,7 @@ import { AddSwitchesDrawer } from "./components/AddSwitchesDrawer";
 import { SettingsDrawer } from "./components/SettingsDrawer";
 import { ConnectionErrorModal } from "./components/ConnectionErrorModal";
 import { usePWAInstall } from "./hooks/usePWAInstall";
+import { Button } from "@/components/ui/button";
 
 export default function App() {
   const { isInstallable, isInstalled, installApp } = usePWAInstall();
@@ -58,7 +59,7 @@ export default function App() {
   } = useTuyaDashboard();
 
   return (
-    <div className="app-container">
+    <div className="flex flex-col h-screen w-full max-w-[1400px] mx-auto p-6 overflow-hidden transition-colors">
       {/* Toast Alert System */}
       <ToastContainer toasts={toasts} onRemoveToast={removeToast} />
 
@@ -74,7 +75,7 @@ export default function App() {
       />
 
       {/* Main Content Area */}
-      <main className="app-main">
+      <main className="flex-1 overflow-y-auto pr-2 -mr-2 flex flex-col">
         {!config ? (
           /* Welcome Form (First run) */
           <WelcomeScreen
@@ -93,27 +94,27 @@ export default function App() {
           /* Dashboard Home */
           <>
             {dashboardTiles.length === 0 ? (
-              <div className="empty-dashboard">
-                <div className="empty-dashboard-icon">
+              <div className="flex flex-col items-center justify-center text-center flex-1 py-16">
+                <div className="text-muted-foreground/30 mb-5 animate-pulse">
                   <Lightbulb size={64} strokeWidth={1} />
                 </div>
-                <h2 className="empty-dashboard-title">
+                <h2 className="text-xl font-bold mb-2 text-foreground">
                   Your Dashboard is Empty
                 </h2>
-                <p className="empty-dashboard-desc">
+                <p className="text-sm text-muted-foreground max-w-sm mb-6 leading-relaxed">
                   You have connected your Tuya account successfully! Now add
                   switch tiles to configure your spotlight control.
                 </p>
-                <button
-                  className="btn btn-primary"
+                <Button
                   onClick={() => setIsAddSwitchOpen(true)}
+                  className="shadow-md shadow-primary/20 cursor-pointer"
                 >
                   <Plus size={16} />
                   <span>Add First Switch</span>
-                </button>
+                </Button>
               </div>
             ) : (
-              <div className="dashboard-grid" ref={tilesContainerRef}>
+              <div className="grid grid-cols-[repeat(auto-fill,minmax(280px,1fr))] gap-5 mb-10" ref={tilesContainerRef}>
                 {dashboardTiles.map((tile: any) => {
                   const key = `${tile.deviceId}:${tile.code}`;
                   return (
@@ -149,14 +150,14 @@ export default function App() {
                 {/* Add Switch grid tile shortcut */}
                 {isEditMode && (
                   <div
-                    className="add-tile"
+                    className="group flex flex-col items-center justify-center border-2 border-dashed border-border hover:border-primary rounded-2xl p-6 min-h-[160px] cursor-pointer hover:bg-primary/5 text-muted-foreground hover:text-foreground transition-all duration-300 hover:-translate-y-1"
                     onClick={() => setIsAddSwitchOpen(true)}
                   >
-                    <div className="add-tile-icon-circle">
+                    <div className="w-11 h-11 rounded-full bg-muted flex items-center justify-center mb-3 group-hover:bg-primary/15 group-hover:text-primary transition-all duration-300">
                       <Plus size={20} />
                     </div>
-                    <span style={{ fontSize: "0.9rem", fontWeight: 500 }}>
-                      Add switch grid tile
+                    <span className="text-xs font-semibold uppercase tracking-wider">
+                      Add grid tile
                     </span>
                   </div>
                 )}

@@ -1,5 +1,8 @@
 import React from "react";
 import { Sparkles, Loader2, ExternalLink } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Select } from "@/components/ui/select";
+import { Button } from "@/components/ui/button";
 
 interface WelcomeScreenProps {
   formAccessId: string;
@@ -27,22 +30,25 @@ export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
   onSubmit,
 }) => {
   return (
-    <div className="welcome-container">
-      <div className="welcome-logo-large">
+    <div className="flex flex-col items-center justify-center max-w-[480px] mx-auto text-center py-8 w-full">
+      <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-primary to-cyan-500 flex items-center justify-center mb-6 text-white animate-pulse-glow">
         <Sparkles size={40} />
       </div>
-      <h2 className="welcome-title">Connect Tuya Cloud</h2>
-      <p className="welcome-desc">
+      <h2 className="text-3xl font-semibold tracking-tight mb-3 text-foreground">
+        Connect Tuya Cloud
+      </h2>
+      <p className="text-muted-foreground mb-8 text-sm">
         Please enter your Tuya Open Platform credentials to discover and
         control smart switches on your local dashboard.
       </p>
 
-      <form onSubmit={onSubmit} style={{ width: "100%", textAlign: "left" }}>
-        <div className="form-group">
-          <label className="form-label">Access ID (Client ID)</label>
-          <input
+      <form onSubmit={onSubmit} className="w-full text-left space-y-5">
+        <div className="space-y-2">
+          <label className="block text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+            Access ID (Client ID)
+          </label>
+          <Input
             type="text"
-            className="form-input"
             value={formAccessId}
             onChange={(e) => setFormAccessId(e.target.value)}
             placeholder="e.g. 7wyx..."
@@ -50,11 +56,12 @@ export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
           />
         </div>
 
-        <div className="form-group">
-          <label className="form-label">Access Secret (Client Secret)</label>
-          <input
+        <div className="space-y-2">
+          <label className="block text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+            Access Secret (Client Secret)
+          </label>
+          <Input
             type="password"
-            className="form-input"
             value={formAccessSecret}
             onChange={(e) => setFormAccessSecret(e.target.value)}
             placeholder="e.g. 4d8b..."
@@ -62,10 +69,11 @@ export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
           />
         </div>
 
-        <div className="form-group">
-          <label className="form-label">API Region Server</label>
-          <select
-            className="form-select"
+        <div className="space-y-2">
+          <label className="block text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+            API Region Server
+          </label>
+          <Select
             value={formRegion}
             onChange={(e) => setFormRegion(e.target.value)}
           >
@@ -74,55 +82,36 @@ export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
                 {opt.label}
               </option>
             ))}
-          </select>
-          <p className="form-help">
+          </Select>
+          <p className="text-xs text-muted-foreground/70 mt-1">
             Select the region matching your Tuya Cloud Smart Home project.
           </p>
         </div>
 
         {testStatus === "error" && (
-          <div
-            style={{
-              color: "var(--accent-error)",
-              fontSize: "0.85rem",
-              marginBottom: 16,
-            }}
-          >
-            ❌ {testErrorMessage}
+          <div className="text-destructive text-sm font-medium flex items-center gap-1">
+            <span>❌</span>
+            <span>{testErrorMessage}</span>
           </div>
         )}
 
-        <button
+        <Button
           type="submit"
-          className="btn btn-primary"
-          style={{
-            width: "100%",
-            justifyContent: "center",
-            padding: "12px",
-          }}
+          className="w-full py-6 text-base font-semibold shadow-md cursor-pointer"
           disabled={testStatus === "testing"}
         >
           {testStatus === "testing" ? (
             <>
-              <Loader2 size={18} className="spinning" />
+              <Loader2 size={18} className="animate-spin" />
               <span>Verifying Credentials...</span>
             </>
           ) : (
             <span>Connect & Fetch Devices</span>
           )}
-        </button>
+        </Button>
       </form>
 
-      <div
-        style={{
-          marginTop: 24,
-          fontSize: "0.75rem",
-          color: "var(--text-dark)",
-          display: "flex",
-          flexDirection: "column",
-          gap: 6,
-        }}
-      >
+      <div className="mt-8 text-xs text-muted-foreground/60 flex flex-col gap-2">
         <span>
           Secure Connection: API keys are stored base64 encrypted in localStorage.
         </span>
@@ -130,15 +119,10 @@ export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
           href="https://platform.tuya.com/"
           target="_blank"
           rel="noreferrer"
-          style={{
-            color: "var(--accent-primary)",
-            display: "inline-flex",
-            alignItems: "center",
-            justifyContent: "center",
-            gap: 4,
-          }}
+          className="text-primary hover:underline inline-flex items-center justify-center gap-1"
         >
-          Tuya IoT Platform <ExternalLink size={10} />
+          <span>Tuya IoT Platform</span>
+          <ExternalLink size={12} />
         </a>
       </div>
     </div>

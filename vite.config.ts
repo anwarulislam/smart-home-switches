@@ -2,6 +2,9 @@ import { defineConfig } from 'vite'
 import type { Plugin } from 'vite'
 import react from '@vitejs/plugin-react'
 import crypto from 'crypto'
+import path from 'path'
+import tailwindcss from '@tailwindcss/vite'
+
 
 const proxyCache = new Map<string, string>();
 
@@ -226,5 +229,10 @@ function tuyaProxyPlugin(): Plugin {
 
 // https://vite.dev/config/
 export default defineConfig({
-  plugins: [react(), tuyaProxyPlugin()],
+  plugins: [react(), tailwindcss(), tuyaProxyPlugin()],
+  resolve: {
+    alias: {
+      "@": path.resolve(__dirname, "./src"),
+    },
+  },
 })
